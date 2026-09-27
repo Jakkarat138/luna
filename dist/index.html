@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#075985" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="description" content="โปรแกรมจำลองการดูแลเด็กป่วย SLE เมื่อต้องออกไปกลางแจ้ง" />
+  <title>น้องลูน่า — โปรแกรมจำลองดูแลเด็ก SLE</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23075985'/%3E%3Cpath d='M20 37c8-5 12-13 12-22 7 5 10 12 8 20-2 7-9 12-17 10-4-1-7-4-9-7 2 0 4 0 6-1z' fill='%23fef08a'/%3E%3C/svg%3E" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Mitr:wght@400;500;600&display=swap');
+
+    :root {
+      --navy: #0b2942;
+      --blue: #075985;
+      --sky: #e0f2fe;
+      --aqua: #06b6d4;
+      --mint: #ccfbf1;
+      --yellow: #fde68a;
+      --amber: #f59e0b;
+      --paper: #f7fcff;
+      --white: #ffffff;
+      --muted: #5d7182;
+      --line: #c9e1ec;
+      --danger: #d94343;
+      --shadow: 0 16px 50px rgba(8, 62, 90, .12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      color: var(--navy);
+      background:
+        radial-gradient(circle at 82% 7%, rgba(253,230,138,.72) 0 110px, transparent 111px),
+        linear-gradient(180deg, #dff5ff 0, #f7fcff 38%, #eefbf8 100%);
+      font-family: "IBM Plex Sans Thai", system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, input:focus-visible, a:focus-visible {
+      outline: 4px solid rgba(245,158,11,.45);
+      outline-offset: 3px;
+    }
+
+    .app { max-width: 1180px; margin: 0 auto; padding: 22px 24px 50px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 48px; height: 48px; border-radius: 15px; display: grid; place-items: center;
+      color: var(--yellow); background: var(--blue); font-size: 26px; box-shadow: 0 8px 24px rgba(7,89,133,.24);
+    }
+    .brand strong { display: block; font-family: Mitr, sans-serif; font-size: 1.15rem; font-weight: 600; line-height: 1.1; }
+    .brand span { color: var(--muted); font-size: .88rem; }
+    .sound-status { border: 1px solid var(--line); background: rgba(255,255,255,.72); color: var(--blue); padding: 9px 13px; border-radius: 999px; font-weight: 600; }
+
+    .grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(300px, .8fr); gap: 22px; align-items: start; }
+    .panel { background: rgba(255,255,255,.9); border: 1px solid rgba(180,218,232,.8); border-radius: 28px; box-shadow: var(--shadow); }
+    .simulator { padding: 26px; overflow: hidden; position: relative; }
+    .eyebrow { margin: 0 0 5px; color: var(--blue); font-weight: 700; letter-spacing: .02em; }
+    h1, h2, h3 { font-family: Mitr, sans-serif; font-weight: 500; letter-spacing: -.02em; }
+    h1 { margin: 0; font-size: clamp(1.8rem, 4vw, 3.25rem); line-height: 1.16; max-width: 760px; }
+    .lead { margin: 10px 0 20px; color: var(--muted); font-size: 1.05rem; max-width: 680px; }
+
+    .scene {
+      min-height: 300px; border-radius: 22px; overflow: hidden; position: relative;
+      background: linear-gradient(#c9f1ff 0 63%, #a7e5c3 63% 100%);
+      border: 1px solid #a7d9e9;
+    }
+    .cloud { position: absolute; width: 120px; height: 30px; background: rgba(255,255,255,.8); border-radius: 99px; top: 40px; left: 38px; }
+    .cloud::before, .cloud::after { content:""; position:absolute; background:inherit; border-radius:50%; }
+    .cloud::before { width:48px;height:48px;left:16px;bottom:0; }
+    .cloud::after { width:62px;height:62px;right:12px;bottom:0; }
+    .sun { position: absolute; right: 46px; top: 35px; width: 84px; height: 84px; border-radius: 50%; background: #ffd64f; box-shadow: 0 0 0 18px rgba(255,214,79,.22), 0 0 40px #ffd64f; }
+    .house { position: absolute; left: 9%; bottom: 17%; width: 165px; height: 110px; background: #fff7e5; border: 5px solid #fff; border-radius: 8px; box-shadow: 0 10px 0 rgba(11,41,66,.08); }
+    .house::before { content:""; position:absolute; left:-18px; top:-68px; border-left:98px solid transparent; border-right:98px solid transparent; border-bottom:72px solid #117f8c; }
+    .door { position:absolute; width:44px; height:70px; left:58px; bottom:0; background:#ffb84d; border-radius:8px 8px 0 0; }
+    .path { position:absolute; left:24%; bottom:-25px; width:52%; height:120px; background:#f7d9a9; transform:skewX(-24deg); border-radius:48%; }
+    .kid {
+      position:absolute; z-index:2; left:28%; bottom:17%; width:80px; height:106px; transition: left .8s cubic-bezier(.2,.8,.2,1);
+      filter: drop-shadow(0 7px 3px rgba(11,41,66,.14));
+    }
+    .kid.outside { left: 66%; }
+    .kid.shaded { left: 78%; }
+    .head { width:52px;height:52px;margin:auto;background:#c98255;border-radius:48% 48% 44% 44%;border:5px solid #243b53;position:relative; }
+    .head::after { content:"•  •"; position:absolute; color:#0b2942; font-size:17px; left:10px; top:18px; letter-spacing:7px; }
+    .body { width:68px;height:66px;margin:-3px auto 0;background:#0e7490;border-radius:22px 22px 14px 14px;border:4px solid #fff; }
+    .badge { position:absolute; left:16px; top:15px; width:25px; height:25px; border-radius:50%; background:#fff; display:grid; place-items:center; font-size:15px; }
+    .shade { position:absolute; right:5%; bottom:14%; width:115px; height:145px; border-radius:55% 55% 12px 12px; background:#07866e; box-shadow:inset -22px -8px rgba(1,95,80,.22); }
+    .shade::after { content:"";position:absolute;left:52px;bottom:-35px;width:12px;height:65px;background:#754927;border-radius:9px; }
+    .scene-chip { position:absolute; left:18px; top:17px; z-index:4; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,.9); font-weight:700; color:#8b4d08; }
+
+    .action-row { display:flex; gap:12px; margin-top:16px; align-items:stretch; flex-wrap:wrap; }
+    .primary {
+      flex:1; min-width:230px; border:0; border-radius:17px; padding:16px 20px; color:white; background:var(--blue);
+      font-weight:700; font-size:1.05rem; box-shadow:0 10px 22px rgba(7,89,133,.25); transition:.18s ease;
+    }
+    .primary:hover { transform:translateY(-2px); background:#064c73; }
+    .secondary { border:1px solid var(--line); background:#fff; color:var(--blue); border-radius:17px; padding:14px 18px; font-weight:700; }
+    .protection-status { width:100%; margin:0; padding:10px 14px; border-radius:14px; background:#fff4d2; color:#76500a; font-weight:700; text-align:center; }
+    .protection-status.ready { background:#d8f7ee; color:#087361; }
+    .heat-trigger { width:100%; margin-top:12px; border:0; border-radius:15px; padding:12px; background:#d94343; color:#fff; font-weight:700; }
+
+    .side { display:grid; gap:18px; }
+    .weather { padding:22px; }
+    .weather-top { display:flex; justify-content:space-between; align-items:start; }
+    .weather h2, .checkin h2 { margin:0; font-size:1.2rem; }
+    .temp { font-family:Mitr,sans-serif; font-size:2.3rem; line-height:1; }
+    .uvbox { margin-top:18px; border-radius:18px; padding:16px; background:#fff5cf; border:1px solid #f6d86e; }
+    .uvrow { display:flex;justify-content:space-between;align-items:center;gap:12px; }
+    .uvtag { background:#d94343;color:white;font-weight:700;border-radius:999px;padding:5px 10px; }
+    .meter { display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:12px; }
+    .meter i { height:8px;border-radius:99px;background:#e3cb71; }
+    .meter i:nth-child(-n+4) { background:#ed6b45; }
+    .weather small { display:block;margin-top:11px;color:#75500d;line-height:1.45; }
+
+    .checkin { padding:22px; }
+    .energy { display:flex;gap:8px;margin-top:14px; }
+    .energy button { flex:1;border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px 5px;font-size:1.4rem; }
+    .energy button span { display:block;font-size:.75rem;color:var(--muted); }
+    .energy button.selected { background:var(--mint);border-color:#0d9488;box-shadow:inset 0 0 0 2px #0d9488; }
+    .helper { margin:12px 0 0;color:var(--muted);font-size:.88rem; }
+
+    .tip { margin-top:18px; padding:15px 18px; border-radius:18px; background:#e6fffb; border-left:5px solid #0d9488; display:flex; gap:12px; }
+    .tip strong { display:block; }
+    .tip p { margin:2px 0 0; color:#315765; font-size:.92rem; }
+
+    .alert-backdrop { position:fixed;inset:0;background:rgba(7,35,53,.62);display:none;align-items:center;justify-content:center;padding:20px;z-index:20;backdrop-filter:blur(8px); }
+    .alert-backdrop.open { display:flex; animation:fade .18s ease-out; }
+    .alert-card { width:min(620px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:28px;padding:25px;box-shadow:0 24px 90px rgba(0,0,0,.28);animation:pop .25s ease-out; }
+    .alert-head { display:flex;gap:15px;align-items:flex-start; }
+    .alarm { width:58px;height:58px;display:grid;place-items:center;flex:none;border-radius:18px;background:#fff1c2;font-size:30px;animation:ring 1.1s ease-in-out 2; }
+    .alert-card h2 { margin:0;font-size:1.65rem; }
+    .alert-card .intro { margin:4px 0 0;color:var(--muted); }
+    .tasks { display:grid;gap:9px;margin:20px 0; }
+    .task { display:flex;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:#f8fcfe;cursor:pointer; }
+    .task:hover { border-color:#58b7ce; }
+    .task input { width:22px;height:22px;accent-color:#0d9488;flex:none; }
+    .task-icon { font-size:1.5rem; }
+    .task strong { display:block; }
+    .task small { color:var(--muted); }
+    .progress-label { display:flex;justify-content:space-between;font-weight:600;font-size:.9rem; }
+    .progress { height:10px;margin:7px 0 18px;background:#dbeaf0;border-radius:99px;overflow:hidden; }
+    .progress span { display:block;height:100%;width:0;background:linear-gradient(90deg,#0d9488,#06b6d4);transition:width .25s; }
+    .ready { width:100%;border:0;border-radius:17px;padding:15px;background:#b8c7ce;color:#fff;font-weight:700;font-size:1rem;cursor:not-allowed; }
+    .ready.active { background:#087f6c;cursor:pointer;box-shadow:0 9px 22px rgba(8,127,108,.22); }
+    .cancel { width:100%;border:0;background:transparent;color:var(--muted);padding:12px 0 0;text-decoration:underline; }
+    .success, .heat-view { display:none;text-align:center;padding:14px 5px 3px; }
+    .success.show, .heat-view.show { display:block; }
+    .heat-view .big { font-size:3.4rem; }
+    .heat-view h2 { color:#b52e2e; margin:0; }
+    .heat-view p { color:var(--muted); }
+    .success .big { font-size:3.2rem; }
+    .success h2 { margin:0; }
+    .success p { color:var(--muted); }
+
+    footer { max-width:900px;margin:24px auto 0;text-align:center;color:var(--muted);font-size:.84rem; }
+    footer a { color:var(--blue); }
+
+    .toast { position:fixed;left:50%;bottom:25px;transform:translate(-50%,20px);background:#0b2942;color:#fff;padding:12px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:40;box-shadow:var(--shadow); }
+    .toast.show { opacity:1;transform:translate(-50%,0); }
+
+    @keyframes fade { from { opacity:0; } }
+    @keyframes pop { from { opacity:0;transform:scale(.95) translateY(12px); } }
+    @keyframes ring { 0%,100%{transform:rotate(0)}20%{transform:rotate(-9deg)}40%{transform:rotate(9deg)}60%{transform:rotate(-6deg)}80%{transform:rotate(6deg)} }
+
+    @media (max-width:860px) {
+      .grid { grid-template-columns:1fr; }
+      .side { grid-template-columns:1fr 1fr; }
+      .scene { min-height:270px; }
+    }
+    @media (max-width:620px) {
+      body { background:linear-gradient(180deg,#dff5ff 0,#f7fcff 44%,#eefbf8 100%); }
+      .app { padding:12px 12px calc(24px + env(safe-area-inset-bottom)); }
+      .topbar { margin-bottom:12px; }
+      .logo { width:42px;height:42px;border-radius:13px;font-size:23px; }
+      .brand { gap:9px; }
+      .brand strong { font-size:1rem; }
+      .brand span { display:none; }
+      .sound-status { min-height:44px;font-size:.82rem;padding:8px 11px; }
+      .grid { gap:14px; }
+      .simulator { padding:16px;border-radius:22px;box-shadow:0 10px 28px rgba(8,62,90,.1); }
+      .eyebrow { font-size:.88rem;margin-bottom:3px; }
+      h1 { font-size:1.75rem;line-height:1.2; }
+      .lead { font-size:.95rem;line-height:1.5;margin:7px 0 13px; }
+      .scene { min-height:220px;border-radius:17px; }
+      .scene-chip { left:10px;top:10px;padding:6px 9px;font-size:.78rem; }
+      .house { transform:scale(.7);transform-origin:left bottom;left:3%; }
+      .kid { left:29%;transform:scale(.76);transform-origin:bottom; }
+      .kid.outside { left:61%; }
+      .kid.shaded { left:72%; }
+      .shade { transform:scale(.7);transform-origin:right bottom;right:0; }
+      .sun { width:55px;height:55px;right:22px;top:28px;box-shadow:0 0 0 12px rgba(255,214,79,.2),0 0 28px #ffd64f; }
+      .cloud { left:10px;top:34px;transform:scale(.64);transform-origin:left top; }
+      .action-row { display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px; }
+      #prepareGear { grid-column:1;grid-row:1; }
+      #resetBtn { grid-column:2;grid-row:1; }
+      .action-row .primary { grid-column:1 / -1;grid-row:2;min-width:0;min-height:58px;padding:12px;font-size:1rem; }
+      .action-row .secondary { min-height:50px;padding:10px 8px;font-size:.88rem; }
+      .protection-status { grid-column:1 / -1;grid-row:3;padding:9px 10px;font-size:.86rem;line-height:1.4; }
+      .tip { margin-top:12px;padding:12px 13px;border-radius:15px; }
+      .tip p { font-size:.86rem; }
+      .side { grid-template-columns:1fr;gap:14px; }
+      .weather,.checkin { padding:17px;border-radius:22px;box-shadow:0 10px 28px rgba(8,62,90,.08); }
+      .temp { font-size:2rem; }
+      .heat-trigger { min-height:50px; }
+      .energy button { min-height:66px; }
+      .alert-backdrop { align-items:flex-end;padding:0; }
+      .alert-card { width:100%;max-height:92dvh;padding:18px 14px calc(16px + env(safe-area-inset-bottom));border-radius:24px 24px 0 0; }
+      .alert-head { gap:11px; }
+      .alarm { width:50px;height:50px;border-radius:15px;font-size:26px; }
+      .alert-card h2 { font-size:1.35rem; }
+      .alert-card .intro { font-size:.9rem;line-height:1.4; }
+      .tasks { gap:7px;margin:14px 0; }
+      .task { min-height:62px;padding:9px 10px;border-radius:14px; }
+      .task input { width:25px;height:25px; }
+      .task-icon { font-size:1.35rem; }
+      .task strong { font-size:.92rem;line-height:1.3; }
+      .task small { display:none; }
+      .ready,.primary,.cancel { min-height:52px; }
+      .success,.heat-view { padding:8px 2px 3px; }
+      .success .big,.heat-view .big { font-size:2.8rem; }
+      footer { margin-top:16px;font-size:.76rem;line-height:1.45; }
+    }
+    @media (max-width:380px) {
+      h1 { font-size:1.52rem; }
+      .scene { min-height:205px; }
+      .action-row { grid-template-columns:1fr; }
+      #prepareGear,#resetBtn,.action-row .primary,.action-row .secondary,.protection-status { grid-column:1;grid-row:auto; }
+    }
+    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important; } }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">☾</div>
+        <div><strong>น้องลูน่า</strong><span>ผู้ช่วยดูแลเด็ก SLE</span></div>
+      </div>
+      <button class="sound-status" id="soundToggle" type="button" aria-pressed="true">🔊 เปิดเสียง</button>
+    </header>
+
+    <div class="grid">
+      <section class="panel simulator" aria-labelledby="mainTitle">
+        <p class="eyebrow">สถานการณ์จำลองวันนี้</p>
+        <h1 id="mainTitle">ก่อนออกไปเล่น<br>เรามาเตรียมตัวกันนะ</h1>
+        <p class="lead">ลองพาน้องลูน่าออกจากบ้าน ระบบจะตรวจพบแสงแดดและช่วยเตือนสิ่งที่ต้องเตรียม</p>
+
+        <div class="scene" aria-label="ภาพจำลองน้องลูน่าอยู่หน้าบ้านในวันที่แดดจัด">
+          <div class="scene-chip">☀️ แดดจัด · UV 8</div>
+          <div class="cloud" aria-hidden="true"></div>
+          <div class="sun" aria-hidden="true"></div>
+          <div class="house" aria-hidden="true"><div class="door"></div></div>
+          <div class="path" aria-hidden="true"></div>
+          <div class="kid" id="kid" aria-hidden="true"><div class="head"></div><div class="body"><div class="badge">☾</div></div></div>
+          <div class="shade" aria-hidden="true"></div>
+        </div>
+
+        <div class="action-row">
+          <button class="secondary" id="prepareGear" type="button">🛡️ เตรียมของป้องกันก่อน</button>
+          <button class="primary" id="goOutside" type="button">☀️ ออกไปกลางแดด</button>
+          <button class="secondary" id="resetBtn" type="button">↻ เริ่มใหม่</button>
+          <p class="protection-status" id="protectionStatus">⚠️ ยังไม่ได้ใส่อุปกรณ์ป้องกัน</p>
+        </div>
+
+        <div class="tip">
+          <span aria-hidden="true">💡</span>
+          <div><strong>จำง่าย ๆ: ทา–ใส่–หลบ</strong><p>ทาครีมกันแดด ใส่เสื้อผ้าปกปิดและแว่นกันแดด แล้วเลือกอยู่ในที่ร่ม</p></div>
+        </div>
+      </section>
+
+      <aside class="side" aria-label="ข้อมูลประกอบสถานการณ์">
+        <section class="panel weather">
+          <div class="weather-top"><div><p class="eyebrow">สภาพอากาศจำลอง</p><h2>กรุงเทพฯ · 10:30 น.</h2></div><div class="temp" id="tempValue">33°</div></div>
+          <div class="uvbox">
+            <div class="uvrow"><strong>รังสี UV วันนี้</strong><span class="uvtag">สูงมาก · 8</span></div>
+            <div class="meter" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+            <small>ควรหลีกเลี่ยงแดดตรง จัดกิจกรรมในร่มหรือเลือกช่วงที่แดดอ่อนกว่า</small>
+          </div>
+          <button class="heat-trigger" id="heatButton" type="button">🔥 จำลองอากาศร้อนขึ้น</button>
+        </section>
+
+        <section class="panel checkin">
+          <p class="eyebrow">เช็กอินวันนี้</p>
+          <h2>น้องลูน่ารู้สึกอย่างไร?</h2>
+          <div class="energy" role="group" aria-label="เลือกระดับพลังงาน">
+            <button type="button" data-feel="สดใส">😊<span>สดใส</span></button>
+            <button type="button" data-feel="พอไหว">😐<span>พอไหว</span></button>
+            <button type="button" data-feel="เหนื่อย">😴<span>เหนื่อย</span></button>
+          </div>
+          <p class="helper" id="feelMessage">เลือกความรู้สึกเพื่อฝึกสังเกตอาการของตัวเอง</p>
+        </section>
+      </aside>
+    </div>
+
+    <footer>
+      โปรแกรมนี้เป็นสื่อจำลองเพื่อการเรียนรู้ ไม่ใช่เครื่องมือวินิจฉัยหรือคำสั่งรักษา ให้ทำตามแผนของแพทย์ประจำตัวเด็กเสมอ ·
+      คำแนะนำเรื่องการป้องกันแดดอ้างอิงจาก <a href="https://www.nhs.uk/conditions/lupus/" target="_blank" rel="noopener">NHS</a> และ <a href="https://www.lupus.org/resources/how-lupus-affects-the-skin" target="_blank" rel="noopener">Lupus Foundation of America</a>
+    </footer>
+  </main>
+
+  <div class="alert-backdrop" id="alertModal" role="dialog" aria-modal="true" aria-labelledby="alertTitle">
+    <div class="alert-card">
+      <div id="checklistView">
+        <div class="alert-head">
+          <div class="alarm" aria-hidden="true">🔔</div>
+          <div><h2 id="alertTitle">เดี๋ยวก่อน! ข้างนอกแดดแรง</h2><p class="intro" id="alertIntro">เตรียมเกราะป้องกันแสงแดดให้น้องลูน่าก่อนนะ</p></div>
+        </div>
+        <div class="tasks">
+          <label class="task"><input type="checkbox" /><span class="task-icon">🧴</span><span><strong>ทาครีมกันแดด SPF 50+</strong><small>ชนิดป้องกันทั้ง UVA และ UVB ตามคำแนะนำของแพทย์</small></span></label>
+          <label class="task"><input type="checkbox" /><span class="task-icon">👕</span><span><strong>ใส่เสื้อแขนยาวและกางเกงขายาว</strong><small>เลือกผ้าทอแน่นที่ช่วยปกปิดผิว</small></span></label>
+          <label class="task"><input type="checkbox" /><span class="task-icon">👒</span><span><strong>สวมหมวกปีกกว้าง</strong><small>ช่วยบังใบหน้า คอ และหู</small></span></label>
+          <label class="task"><input type="checkbox" /><span class="task-icon">🕶️</span><span><strong>ใส่แว่นกันแดด</strong><small>เลือกแบบที่ป้องกันรังสี UV และปิดด้านข้างได้ดี</small></span></label>
+        </div>
+        <div class="progress-label"><span>เตรียมพร้อมแล้ว</span><span id="progressText">0 / 4</span></div>
+        <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+        <button class="ready" id="readyBtn" type="button" disabled>เตรียมให้ครบก่อนออกไปนะ</button>
+        <button class="cancel" id="cancelBtn" type="button">กลับเข้าไปพักในบ้าน</button>
+      </div>
+      <div class="success" id="successView">
+        <div class="big" aria-hidden="true">🌳✨</div>
+        <h2>พร้อมแล้ว เก่งมาก!</h2>
+        <p>น้องลูน่าเตรียมตัวครบแล้ว ไปอยู่ใต้ร่มไม้และพักเมื่อรู้สึกเหนื่อยนะ</p>
+        <button class="primary" id="finishBtn" type="button">☀️ ออกไปกลางแดด</button>
+      </div>
+      <div class="heat-view" id="heatView">
+        <div class="big" aria-hidden="true">🔥🌳</div>
+        <h2 id="heatTitle">อากาศร้อนขึ้น!</h2>
+        <p>ไปหลบในที่ร่มทันที และพักจนกว่าจะรู้สึกดีขึ้นนะ</p>
+        <button class="primary" id="shadeBtn" type="button">🌳 ไปหลบในที่ร่มทันที</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const modal = document.getElementById('alertModal');
+    const kid = document.getElementById('kid');
+    const goButton = document.getElementById('goOutside');
+    const prepareButton = document.getElementById('prepareGear');
+    const resetButton = document.getElementById('resetBtn');
+    const heatButton = document.getElementById('heatButton');
+    const shadeButton = document.getElementById('shadeBtn');
+    const readyButton = document.getElementById('readyBtn');
+    const cancelButton = document.getElementById('cancelBtn');
+    const finishButton = document.getElementById('finishBtn');
+    const progressText = document.getElementById('progressText');
+    const progressBar = document.getElementById('progressBar');
+    const checklist = [...document.querySelectorAll('.task input')];
+    const checklistView = document.getElementById('checklistView');
+    const successView = document.getElementById('successView');
+    const heatView = document.getElementById('heatView');
+    const alertTitle = document.getElementById('alertTitle');
+    const alertIntro = document.getElementById('alertIntro');
+    const soundToggle = document.getElementById('soundToggle');
+    const protectionStatus = document.getElementById('protectionStatus');
+    const tempValue = document.getElementById('tempValue');
+    const toast = document.getElementById('toast');
+    let soundOn = true;
+    let protectionReady = false;
+    let outdoors = false;
+    let lastFocus = null;
+
+    function speak(text, rate = .9) {
+      if (!soundOn || !('speechSynthesis' in window)) return;
+      speechSynthesis.cancel();
+      const msg = new SpeechSynthesisUtterance(text);
+      msg.lang = 'th-TH'; msg.rate = rate; msg.pitch = 1.03;
+      speechSynthesis.speak(msg);
+    }
+
+    function playAlarm(type) {
+      if (!soundOn) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioCtx();
+        const notes = type === 'heat'
+          ? [920, 620, 920, 620, 920, 620]
+          : [520, 780, 520, 780];
+        notes.forEach((frequency, index) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const start = ctx.currentTime + index * (type === 'heat' ? .12 : .18);
+          osc.type = type === 'heat' ? 'sawtooth' : 'square';
+          osc.frequency.value = frequency;
+          gain.gain.setValueAtTime(.0001, start);
+          gain.gain.exponentialRampToValueAtTime(type === 'heat' ? .16 : .1, start + .02);
+          gain.gain.exponentialRampToValueAtTime(.0001, start + .11);
+          osc.connect(gain).connect(ctx.destination);
+          osc.start(start); osc.stop(start + .12);
+        });
+      } catch (_) {}
+    }
+
+    function showOnly(view) {
+      checklistView.style.display = view === 'checklist' ? 'block' : 'none';
+      successView.classList.toggle('show', view === 'success');
+      heatView.classList.toggle('show', view === 'heat');
+    }
+
+    function openChecklist(mode) {
+      lastFocus = document.activeElement;
+      modal.setAttribute('aria-labelledby', 'alertTitle');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      showOnly('checklist');
+      alertTitle.textContent = mode === 'warning' ? 'หยุดก่อน! ยังไม่ได้ป้องกัน' : 'เตรียมตัวก่อนออกแดด';
+      alertIntro.textContent = mode === 'warning'
+        ? 'ใส่ของป้องกันให้ครบก่อนออกไปกลางแดดนะ'
+        : 'เลือกของป้องกันให้ครบ แล้วจึงออกไปได้';
+      updateProgress();
+      setTimeout(() => checklist[0].focus(), 120);
+      if (mode === 'warning') {
+        playAlarm('protection');
+        speak('หยุดก่อน ยังไม่ได้ใส่ของป้องกัน กรุณาเตรียมให้ครบก่อนออกไปกลางแดด');
+      }
+    }
+
+    function openHeatAlert() {
+      lastFocus = document.activeElement;
+      modal.setAttribute('aria-labelledby', 'heatTitle');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      showOnly('heat');
+      playAlarm('heat');
+      speak('อากาศร้อนขึ้น ไปหลบในที่ร่มทันที', .84);
+      shadeButton.focus();
+    }
+
+    function closeModal() {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+      if ('speechSynthesis' in window) speechSynthesis.cancel();
+      if (lastFocus) lastFocus.focus();
+    }
+
+    function goOutside() {
+      kid.classList.remove('shaded');
+      if (!protectionReady) {
+        outdoors = false;
+        kid.classList.add('outside');
+        openChecklist('warning');
+        return;
+      }
+      outdoors = true;
+      kid.classList.add('outside');
+      showToast('ออกไปได้แล้ว — ใส่อุปกรณ์ครบ ไม่มีเสียงเตือน ✓');
+    }
+
+    function updateProgress() {
+      const done = checklist.filter(item => item.checked).length;
+      progressText.textContent = `${done} / ${checklist.length}`;
+      progressBar.style.width = `${done / checklist.length * 100}%`;
+      const complete = done === checklist.length;
+      readyButton.disabled = !complete;
+      readyButton.classList.toggle('active', complete);
+      readyButton.textContent = complete ? 'ใส่อุปกรณ์ครบแล้ว!' : 'เตรียมให้ครบก่อนออกไปนะ';
+    }
+
+    function updateProtectionStatus() {
+      protectionStatus.classList.toggle('ready', protectionReady);
+      protectionStatus.textContent = protectionReady
+        ? '✅ ใส่อุปกรณ์ป้องกันครบแล้ว — ออกแดดได้โดยไม่มีเสียงเตือน'
+        : '⚠️ ยังไม่ได้ใส่อุปกรณ์ป้องกัน';
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+
+    prepareButton.addEventListener('click', () => openChecklist('prepare'));
+    goButton.addEventListener('click', goOutside);
+    checklist.forEach(item => item.addEventListener('change', updateProgress));
+    cancelButton.addEventListener('click', () => {
+      outdoors = false;
+      kid.classList.remove('outside');
+      closeModal();
+    });
+
+    readyButton.addEventListener('click', () => {
+      if (readyButton.disabled) return;
+      protectionReady = true;
+      updateProtectionStatus();
+      showOnly('success');
+      finishButton.focus();
+      speak('ใส่อุปกรณ์ป้องกันครบแล้ว พร้อมออกไปกลางแดด');
+    });
+
+    finishButton.addEventListener('click', () => {
+      closeModal();
+      goOutside();
+    });
+
+    heatButton.addEventListener('click', () => {
+      tempValue.textContent = '38°';
+      document.querySelector('.scene-chip').textContent = '🔥 ร้อนจัด · 38°C';
+      openHeatAlert();
+    });
+
+    shadeButton.addEventListener('click', () => {
+      outdoors = false;
+      kid.classList.remove('outside');
+      kid.classList.add('shaded');
+      closeModal();
+      showToast('น้องลูน่าอยู่ในที่ร่มแล้ว ปลอดภัยขึ้น ✓');
+    });
+
+    resetButton.addEventListener('click', () => {
+      checklist.forEach(item => item.checked = false);
+      protectionReady = false; outdoors = false;
+      updateProgress(); updateProtectionStatus();
+      kid.classList.remove('outside', 'shaded');
+      tempValue.textContent = '33°';
+      document.querySelector('.scene-chip').textContent = '☀️ แดดจัด · UV 8';
+      document.querySelectorAll('.energy button').forEach(b => b.classList.remove('selected'));
+      document.getElementById('feelMessage').textContent = 'เลือกความรู้สึกเพื่อฝึกสังเกตอาการของตัวเอง';
+      showToast('เริ่มสถานการณ์ใหม่แล้ว');
+    });
+
+    soundToggle.addEventListener('click', () => {
+      soundOn = !soundOn;
+      soundToggle.setAttribute('aria-pressed', String(soundOn));
+      soundToggle.textContent = soundOn ? '🔊 เปิดเสียง' : '🔇 ปิดเสียง';
+      if (!soundOn && 'speechSynthesis' in window) speechSynthesis.cancel();
+    });
+
+    document.querySelectorAll('.energy button').forEach(button => button.addEventListener('click', () => {
+      document.querySelectorAll('.energy button').forEach(b => b.classList.remove('selected'));
+      button.classList.add('selected');
+      const feel = button.dataset.feel;
+      document.getElementById('feelMessage').textContent = feel === 'เหนื่อย'
+        ? 'วันนี้ควรพักให้เพียงพอ และบอกผู้ปกครองถ้าเหนื่อยผิดปกติ'
+        : `บันทึกแล้ว: วันนี้รู้สึก${feel}`;
+    }));
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && modal.classList.contains('open')) closeModal();
+      if (event.key === 'Tab' && modal.classList.contains('open')) {
+        const focusable = [...modal.querySelectorAll('button:not([disabled]), input, a')].filter(el => el.offsetParent !== null);
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    });
+
+    if (document.modelContext?.registerTool) {
+      try {
+        const toolLifecycle = new AbortController();
+        void Promise.resolve(document.modelContext.registerTool({
+          name: 'start_sun_exposure_simulation',
+          title: 'เริ่มสถานการณ์ออกแดด',
+          description: 'พาน้องลูน่าออกไปกลางแดด ระบบจะเตือนเมื่อยังไม่ได้ใส่อุปกรณ์ป้องกัน',
+          inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+          annotations: { readOnlyHint: false, untrustedContentHint: false },
+          async execute(input) {
+            if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).length) {
+              throw new Error('ไม่ต้องส่งข้อมูลเพิ่มเติม');
+            }
+            goOutside();
+            return { status: protectionReady ? 'outside_protected' : 'warning_missing_protection', protectionReady };
+          }
+        }, { signal: toolLifecycle.signal })).catch(() => {});
+      } catch (_) {}
+    }
+  </script>
+</body>
+</html>
+
