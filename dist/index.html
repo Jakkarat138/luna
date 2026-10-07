@@ -539,11 +539,12 @@
         return;
       }
       const labels = uncheckedItems.map(item => item.dataset.reminderText);
-      reminderMessage.textContent = `ยังไม่ได้ทำ ${uncheckedItems.length} รายการ: ${labels.join(', ')}`;
+      const spokenItems = labels.map(label => `ยังไม่ได้${label}`);
+      reminderMessage.textContent = `รายการที่ยังไม่ได้ทำ: ${labels.join(', ')}`;
       reminderBanner.classList.add('show');
       playReminderChime();
-      speak(`ยังมี ${uncheckedItems.length} รายการที่ไม่ได้ทำ ได้แก่ ${labels.join(' และ ')} กรุณาตรวจสอบ`, .86);
-      showToast(`🔔 ยังไม่ได้ทำ ${uncheckedItems.length} รายการ`);
+      speak(`${spokenItems.join(' ต่อไป ')} กรุณาตรวจสอบ`, .86);
+      showToast('🔔 มีหัวข้อที่ยังไม่ได้ทำ');
     }
 
     function triggerCareReminder(dueInputs) {
