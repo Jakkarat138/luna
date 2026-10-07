@@ -147,6 +147,20 @@
     .task-icon { font-size:1.5rem; }
     .task strong { display:block; }
     .task small { color:var(--muted); }
+    .daily-care { margin:20px 0;padding:17px;border-radius:19px;background:#f0f9ff;border:1px solid #b9ddeb; }
+    .daily-care-head { display:flex;justify-content:space-between;gap:12px;align-items:flex-start;margin-bottom:12px; }
+    .daily-care h3 { margin:0;font-size:1.1rem; }
+    .daily-care-note { margin:2px 0 0;color:var(--muted);font-size:.84rem; }
+    .daily-count { flex:none;padding:5px 10px;border-radius:999px;background:#fff;color:var(--blue);font-weight:700;font-size:.85rem; }
+    .daily-tasks { display:grid;gap:7px; }
+    .daily-task { display:flex;align-items:center;gap:9px;min-height:50px;padding:9px 11px;border-radius:14px;background:#fff;border:1px solid #c9e1ec; }
+    .daily-task label { display:flex;align-items:center;gap:10px;flex:1;cursor:pointer; }
+    .daily-task input { width:21px;height:21px;accent-color:#0d9488;flex:none; }
+    .daily-task-icon { font-size:1.25rem;line-height:1; }
+    .daily-task strong { font-size:.9rem;line-height:1.35; }
+    .medicine-alert { flex:none;border:0;border-radius:10px;background:#fff1c2;color:#76500a;padding:7px 9px;font-weight:700;font-size:.78rem; }
+    .daily-progress { height:8px;margin-top:11px;background:#d5e8f0;border-radius:99px;overflow:hidden; }
+    .daily-progress span { display:block;height:100%;width:0;background:linear-gradient(90deg,#0d9488,#06b6d4);transition:width .25s; }
     .progress-label { display:flex;justify-content:space-between;font-weight:600;font-size:.9rem; }
     .progress { height:10px;margin:7px 0 18px;background:#dbeaf0;border-radius:99px;overflow:hidden; }
     .progress span { display:block;height:100%;width:0;background:linear-gradient(90deg,#0d9488,#06b6d4);transition:width .25s; }
@@ -225,6 +239,18 @@
       .task-icon { font-size:1.35rem; }
       .task strong { font-size:.92rem;line-height:1.3; }
       .task small { display:none; }
+      .daily-care { margin:14px 0;padding:12px;border-radius:16px; }
+      .daily-care-head { margin-bottom:9px; }
+      .daily-care h3 { font-size:1rem; }
+      .daily-care-note { font-size:.76rem;line-height:1.35; }
+      .daily-count { padding:4px 8px;font-size:.76rem; }
+      .daily-task { min-height:50px;padding:8px;gap:7px; }
+      .daily-task label { gap:7px; }
+      .daily-task input { width:23px;height:23px; }
+      .daily-task-icon { font-size:1.1rem; }
+      .daily-task strong { font-size:.82rem; }
+      .medicine-task { align-items:stretch;flex-wrap:wrap; }
+      .medicine-alert { width:100%;min-height:42px; }
       .ready,.primary,.cancel { min-height:52px; }
       .success,.heat-view { padding:8px 2px 3px; }
       .success .big,.heat-view .big { font-size:2.8rem; }
@@ -321,6 +347,22 @@
           <label class="task"><input type="checkbox" /><span class="task-icon">👒</span><span><strong>สวมหมวกปีกกว้าง</strong><small>ช่วยบังใบหน้า คอ และหู</small></span></label>
           <label class="task"><input type="checkbox" /><span class="task-icon">🕶️</span><span><strong>ใส่แว่นกันแดด</strong><small>เลือกแบบที่ป้องกันรังสี UV และปิดด้านข้างได้ดี</small></span></label>
         </div>
+        <section class="daily-care" aria-labelledby="dailyCareTitle">
+          <div class="daily-care-head">
+            <div><h3 id="dailyCareTitle">ดูแลเด็ก SLE 7 ด้าน</h3><p class="daily-care-note">เช็กหัวข้อดูแลประจำวัน ส่วนนี้ไม่กระทบคะแนนเตรียมออกแดด</p></div>
+            <span class="daily-count" id="dailyProgressText">0 / 7</span>
+          </div>
+          <div class="daily-tasks">
+            <div class="daily-task medicine-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">💊</span><strong>1. การรับประทานยาอย่างสม่ำเสมอและถูกต้อง</strong></label><button class="medicine-alert" id="medicineReminder" type="button">🔔 ทดลองเสียงเตือน</button></div>
+            <div class="daily-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">☀️</span><strong>2. การป้องกันและหลีกเลี่ยงแสงแดด / รังสี UV</strong></label></div>
+            <div class="daily-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">🌡️</span><strong>3. การเฝ้าระวังและการสังเกตอาการกำเริบ</strong></label></div>
+            <div class="daily-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">🥗</span><strong>4. การเลือกรับประทานอาหารที่เหมาะสม</strong></label></div>
+            <div class="daily-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">🏃</span><strong>5. การออกกำลังกายและการพักผ่อน</strong></label></div>
+            <div class="daily-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">💛</span><strong>6. การจัดการอารมณ์และความเครียด</strong></label></div>
+            <div class="daily-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">📅</span><strong>7. การมาตรวจตามนัด</strong></label></div>
+          </div>
+          <div class="daily-progress" aria-hidden="true"><span id="dailyProgressBar"></span></div>
+        </section>
         <div class="progress-label"><span>เตรียมพร้อมแล้ว</span><span id="progressText">0 / 4</span></div>
         <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
         <button class="ready" id="readyBtn" type="button" disabled>เตรียมให้ครบก่อนออกไปนะ</button>
@@ -356,6 +398,10 @@
     const progressText = document.getElementById('progressText');
     const progressBar = document.getElementById('progressBar');
     const checklist = [...document.querySelectorAll('.task input')];
+    const dailyChecklist = [...document.querySelectorAll('.daily-care-input')];
+    const dailyProgressText = document.getElementById('dailyProgressText');
+    const dailyProgressBar = document.getElementById('dailyProgressBar');
+    const medicineReminder = document.getElementById('medicineReminder');
     const checklistView = document.getElementById('checklistView');
     const successView = document.getElementById('successView');
     const heatView = document.getElementById('heatView');
@@ -401,6 +447,26 @@
       } catch (_) {}
     }
 
+    function playMedicineReminder() {
+      if (!soundOn) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioCtx();
+        [659, 784, 988].forEach((frequency, index) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          const start = ctx.currentTime + index * .2;
+          osc.type = 'sine';
+          osc.frequency.value = frequency;
+          gain.gain.setValueAtTime(.0001, start);
+          gain.gain.exponentialRampToValueAtTime(.12, start + .03);
+          gain.gain.exponentialRampToValueAtTime(.0001, start + .18);
+          osc.connect(gain).connect(ctx.destination);
+          osc.start(start); osc.stop(start + .2);
+        });
+      } catch (_) {}
+    }
+
     function showOnly(view) {
       checklistView.style.display = view === 'checklist' ? 'block' : 'none';
       successView.classList.toggle('show', view === 'success');
@@ -418,6 +484,7 @@
         ? 'ใส่ของป้องกันให้ครบก่อนออกไปกลางแดดนะ'
         : 'เลือกของป้องกันให้ครบ แล้วจึงออกไปได้';
       updateProgress();
+      updateDailyProgress();
       setTimeout(() => checklist[0].focus(), 120);
       if (mode === 'warning') {
         playAlarm('protection');
@@ -466,6 +533,12 @@
       readyButton.textContent = complete ? 'ใส่อุปกรณ์ครบแล้ว!' : 'เตรียมให้ครบก่อนออกไปนะ';
     }
 
+    function updateDailyProgress() {
+      const done = dailyChecklist.filter(item => item.checked).length;
+      dailyProgressText.textContent = `${done} / ${dailyChecklist.length}`;
+      dailyProgressBar.style.width = `${done / dailyChecklist.length * 100}%`;
+    }
+
     function updateProtectionStatus() {
       protectionStatus.classList.toggle('ready', protectionReady);
       protectionStatus.textContent = protectionReady
@@ -483,6 +556,12 @@
     prepareButton.addEventListener('click', () => openChecklist('prepare'));
     goButton.addEventListener('click', goOutside);
     checklist.forEach(item => item.addEventListener('change', updateProgress));
+    dailyChecklist.forEach(item => item.addEventListener('change', updateDailyProgress));
+    medicineReminder.addEventListener('click', () => {
+      playMedicineReminder();
+      speak('ถึงเวลากินยาแล้ว กินยาตามเวลาและขนาดที่แพทย์กำหนดนะ', .86);
+      showToast(soundOn ? 'ทดลองเสียงเตือนกินยาแล้ว' : 'กรุณาเปิดเสียงก่อนทดลอง');
+    });
     cancelButton.addEventListener('click', () => {
       outdoors = false;
       kid.classList.remove('outside');
@@ -519,8 +598,9 @@
 
     resetButton.addEventListener('click', () => {
       checklist.forEach(item => item.checked = false);
+      dailyChecklist.forEach(item => item.checked = false);
       protectionReady = false; outdoors = false;
-      updateProgress(); updateProtectionStatus();
+      updateProgress(); updateDailyProgress(); updateProtectionStatus();
       kid.classList.remove('outside', 'shaded');
       tempValue.textContent = '33°';
       document.querySelector('.scene-chip').textContent = '☀️ แดดจัด · UV 8';
