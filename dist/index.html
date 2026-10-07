@@ -153,14 +153,24 @@
     .daily-care-note { margin:2px 0 0;color:var(--muted);font-size:.84rem; }
     .daily-count { flex:none;padding:5px 10px;border-radius:999px;background:#fff;color:var(--blue);font-weight:700;font-size:.85rem; }
     .daily-tasks { display:grid;gap:7px; }
-    .daily-task { display:flex;align-items:center;gap:9px;min-height:50px;padding:9px 11px;border-radius:14px;background:#fff;border:1px solid #c9e1ec; }
+    .daily-task { display:flex;align-items:center;gap:9px;min-height:50px;padding:9px 11px;border-radius:14px;background:#fff;border:1px solid #c9e1ec;flex-wrap:wrap; }
     .daily-task label { display:flex;align-items:center;gap:10px;flex:1;cursor:pointer; }
-    .daily-task input { width:21px;height:21px;accent-color:#0d9488;flex:none; }
+    .daily-task input[type="checkbox"] { width:21px;height:21px;accent-color:#0d9488;flex:none; }
     .daily-task-icon { font-size:1.25rem;line-height:1; }
     .daily-task strong { font-size:.9rem;line-height:1.35; }
+    .reminder-tools { display:flex;align-items:center;gap:7px;margin-left:auto; }
+    .reminder-time-label { display:flex!important;align-items:center!important;gap:5px!important;flex:none!important;color:#76500a;font-size:.78rem;font-weight:700;white-space:nowrap; }
+    .reminder-time { width:104px;min-height:38px;border:1px solid #dfbd5b;border-radius:10px;background:#fffdf5;color:var(--navy);padding:6px 8px;font-weight:700; }
     .medicine-alert { flex:none;border:0;border-radius:10px;background:#fff1c2;color:#76500a;padding:7px 9px;font-weight:700;font-size:.78rem; }
     .daily-progress { height:8px;margin-top:11px;background:#d5e8f0;border-radius:99px;overflow:hidden; }
     .daily-progress span { display:block;height:100%;width:0;background:linear-gradient(90deg,#0d9488,#06b6d4);transition:width .25s; }
+    .reminder-setup { display:flex;align-items:center;gap:10px;margin-top:12px;padding:11px;border-radius:14px;background:#fff7db; }
+    .enable-reminders { flex:none;border:0;border-radius:11px;background:#9a6400;color:#fff;padding:10px 13px;font-weight:700; }
+    .enable-reminders.active { background:#087f6c; }
+    .reminder-setup p { margin:0;color:#76500a;font-size:.8rem;line-height:1.4; }
+    .reminder-banner { display:none;margin-top:10px;padding:12px;border-radius:14px;background:#fff0f0;border:2px solid #e36b6b;color:#982b2b; }
+    .reminder-banner.show { display:flex;align-items:center;justify-content:space-between;gap:10px; }
+    .reminder-banner button { flex:none;border:0;border-radius:10px;background:#982b2b;color:#fff;padding:8px 11px;font-weight:700; }
     .progress-label { display:flex;justify-content:space-between;font-weight:600;font-size:.9rem; }
     .progress { height:10px;margin:7px 0 18px;background:#dbeaf0;border-radius:99px;overflow:hidden; }
     .progress span { display:block;height:100%;width:0;background:linear-gradient(90deg,#0d9488,#06b6d4);transition:width .25s; }
@@ -246,11 +256,15 @@
       .daily-count { padding:4px 8px;font-size:.76rem; }
       .daily-task { min-height:50px;padding:8px;gap:7px; }
       .daily-task label { gap:7px; }
-      .daily-task input { width:23px;height:23px; }
+      .daily-task input[type="checkbox"] { width:23px;height:23px; }
       .daily-task-icon { font-size:1.1rem; }
       .daily-task strong { font-size:.82rem; }
-      .medicine-task { align-items:stretch;flex-wrap:wrap; }
-      .medicine-alert { width:100%;min-height:42px; }
+      .reminder-tools { width:100%;margin-left:33px;justify-content:flex-start; }
+      .reminder-time { min-height:42px; }
+      .medicine-alert { min-height:42px; }
+      .reminder-setup { align-items:stretch;flex-direction:column; }
+      .enable-reminders { width:100%;min-height:44px; }
+      .reminder-banner.show { align-items:stretch;flex-direction:column; }
       .ready,.primary,.cancel { min-height:52px; }
       .success,.heat-view { padding:8px 2px 3px; }
       .success .big,.heat-view .big { font-size:2.8rem; }
@@ -353,15 +367,17 @@
             <span class="daily-count" id="dailyProgressText">0 / 7</span>
           </div>
           <div class="daily-tasks">
-            <div class="daily-task medicine-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">💊</span><strong>1. การรับประทานยาอย่างสม่ำเสมอและถูกต้อง</strong></label><button class="medicine-alert" id="medicineReminder" type="button">🔔 ทดลองเสียงเตือน</button></div>
-            <div class="daily-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">☀️</span><strong>2. การป้องกันและหลีกเลี่ยงแสงแดด / รังสี UV</strong></label></div>
-            <div class="daily-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">🌡️</span><strong>3. การเฝ้าระวังและการสังเกตอาการกำเริบ</strong></label></div>
-            <div class="daily-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">🥗</span><strong>4. การเลือกรับประทานอาหารที่เหมาะสม</strong></label></div>
-            <div class="daily-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">🏃</span><strong>5. การออกกำลังกายและการพักผ่อน</strong></label></div>
-            <div class="daily-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">💛</span><strong>6. การจัดการอารมณ์และความเครียด</strong></label></div>
-            <div class="daily-task"><label><input class="daily-care-input" type="checkbox" /><span class="daily-task-icon">📅</span><strong>7. การมาตรวจตามนัด</strong></label></div>
+            <div class="daily-task"><label><input class="daily-care-input" data-care-key="medicine" type="checkbox" /><span class="daily-task-icon">💊</span><strong>1. การรับประทานยาอย่างสม่ำเสมอและถูกต้อง</strong></label><div class="reminder-tools"><label class="reminder-time-label">⏰ เวลา <input class="reminder-time" data-care-key="medicine" data-reminder-text="รับประทานยา" type="time" aria-label="ตั้งเวลาเตือนรับประทานยา" /></label><button class="medicine-alert" id="medicineReminder" type="button">ทดลองเสียง</button></div></div>
+            <div class="daily-task"><label><input class="daily-care-input" data-care-key="sun" type="checkbox" /><span class="daily-task-icon">☀️</span><strong>2. การป้องกันและหลีกเลี่ยงแสงแดด / รังสี UV</strong></label><div class="reminder-tools"><label class="reminder-time-label">⏰ เวลา <input class="reminder-time" data-care-key="sun" data-reminder-text="ป้องกันแสงแดดและรังสี UV" type="time" aria-label="ตั้งเวลาเตือนป้องกันแสงแดด" /></label></div></div>
+            <div class="daily-task"><label><input class="daily-care-input" data-care-key="symptoms" type="checkbox" /><span class="daily-task-icon">🌡️</span><strong>3. การเฝ้าระวังและการสังเกตอาการกำเริบ</strong></label><div class="reminder-tools"><label class="reminder-time-label">⏰ เวลา <input class="reminder-time" data-care-key="symptoms" data-reminder-text="สังเกตอาการ" type="time" aria-label="ตั้งเวลาเตือนสังเกตอาการ" /></label></div></div>
+            <div class="daily-task"><label><input class="daily-care-input" data-care-key="food" type="checkbox" /><span class="daily-task-icon">🥗</span><strong>4. การเลือกรับประทานอาหารที่เหมาะสม</strong></label><div class="reminder-tools"><label class="reminder-time-label">⏰ เวลา <input class="reminder-time" data-care-key="food" data-reminder-text="รับประทานอาหาร" type="time" aria-label="ตั้งเวลาเตือนรับประทานอาหาร" /></label></div></div>
+            <div class="daily-task"><label><input class="daily-care-input" data-care-key="exercise" type="checkbox" /><span class="daily-task-icon">🏃</span><strong>5. การออกกำลังกายและการพักผ่อน</strong></label><div class="reminder-tools"><label class="reminder-time-label">⏰ เวลา <input class="reminder-time" data-care-key="exercise" data-reminder-text="ออกกำลังกายและพักผ่อน" type="time" aria-label="ตั้งเวลาเตือนออกกำลังกายและพักผ่อน" /></label></div></div>
+            <div class="daily-task"><label><input class="daily-care-input" data-care-key="mood" type="checkbox" /><span class="daily-task-icon">💛</span><strong>6. การจัดการอารมณ์และความเครียด</strong></label><div class="reminder-tools"><label class="reminder-time-label">⏰ เวลา <input class="reminder-time" data-care-key="mood" data-reminder-text="ดูแลอารมณ์และความเครียด" type="time" aria-label="ตั้งเวลาเตือนดูแลอารมณ์และความเครียด" /></label></div></div>
+            <div class="daily-task"><label><input class="daily-care-input" data-care-key="appointment" type="checkbox" /><span class="daily-task-icon">📅</span><strong>7. การมาตรวจตามนัด</strong></label><div class="reminder-tools"><label class="reminder-time-label">⏰ เวลา <input class="reminder-time" data-care-key="appointment" data-reminder-text="ตรวจสอบนัดหมาย" type="time" aria-label="ตั้งเวลาเตือนตรวจสอบนัดหมาย" /></label></div></div>
           </div>
           <div class="daily-progress" aria-hidden="true"><span id="dailyProgressBar"></span></div>
+          <div class="reminder-setup"><button class="enable-reminders" id="enableReminders" type="button" aria-pressed="false">🔔 เปิดเสียงเตือนตามเวลา</button><p id="reminderState">เลือกเวลาในข้อที่ต้องการ แล้วกดเปิดเสียงเตือน หน้านี้ต้องเปิดอยู่จึงจะเตือนได้</p></div>
+          <div class="reminder-banner" id="reminderBanner" role="alert"><strong id="reminderMessage"></strong><button id="dismissReminder" type="button">รับทราบ</button></div>
         </section>
         <div class="progress-label"><span>เตรียมพร้อมแล้ว</span><span id="progressText">0 / 4</span></div>
         <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
@@ -402,6 +418,12 @@
     const dailyProgressText = document.getElementById('dailyProgressText');
     const dailyProgressBar = document.getElementById('dailyProgressBar');
     const medicineReminder = document.getElementById('medicineReminder');
+    const reminderInputs = [...document.querySelectorAll('.reminder-time')];
+    const enableRemindersButton = document.getElementById('enableReminders');
+    const reminderState = document.getElementById('reminderState');
+    const reminderBanner = document.getElementById('reminderBanner');
+    const reminderMessage = document.getElementById('reminderMessage');
+    const dismissReminder = document.getElementById('dismissReminder');
     const checklistView = document.getElementById('checklistView');
     const successView = document.getElementById('successView');
     const heatView = document.getElementById('heatView');
@@ -411,7 +433,10 @@
     const protectionStatus = document.getElementById('protectionStatus');
     const tempValue = document.getElementById('tempValue');
     const toast = document.getElementById('toast');
+    const reminderStorageKey = 'luna-sle-reminder-times';
     let soundOn = true;
+    let remindersEnabled = false;
+    let reminderAudioContext = null;
     let protectionReady = false;
     let outdoors = false;
     let lastFocus = null;
@@ -447,11 +472,14 @@
       } catch (_) {}
     }
 
-    function playMedicineReminder() {
+    function playReminderChime() {
       if (!soundOn) return;
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        const ctx = new AudioCtx();
+        if (!AudioCtx) return;
+        reminderAudioContext ||= new AudioCtx();
+        const ctx = reminderAudioContext;
+        if (ctx.state === 'suspended') void ctx.resume();
         [659, 784, 988].forEach((frequency, index) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -465,6 +493,85 @@
           osc.start(start); osc.stop(start + .2);
         });
       } catch (_) {}
+    }
+
+    function configuredReminderCount() {
+      return reminderInputs.filter(input => input.value).length;
+    }
+
+    function updateReminderState() {
+      const count = configuredReminderCount();
+      if (!count) {
+        reminderState.textContent = 'เลือกเวลาที่ต้องการก่อน แล้วกดเปิดเสียงเตือน · หน้านี้ต้องเปิดอยู่จึงจะเตือนได้';
+        return;
+      }
+      reminderState.textContent = remindersEnabled
+        ? `เปิดเสียงเตือนแล้ว ${count} รายการ · หน้านี้ต้องเปิดอยู่จึงจะเตือนได้`
+        : `ตั้งเวลาไว้ ${count} รายการ · กดเปิดเสียงเตือนเพื่อเริ่มใช้งาน`;
+    }
+
+    function saveReminderTimes() {
+      const reminderTimes = Object.fromEntries(reminderInputs.map(input => [input.dataset.careKey, input.value]));
+      try { localStorage.setItem(reminderStorageKey, JSON.stringify(reminderTimes)); } catch (_) {}
+      updateReminderState();
+    }
+
+    function loadReminderTimes() {
+      try {
+        const reminderTimes = JSON.parse(localStorage.getItem(reminderStorageKey) || '{}');
+        reminderInputs.forEach(input => { input.value = reminderTimes[input.dataset.careKey] || ''; });
+      } catch (_) {}
+      updateReminderState();
+    }
+
+    function localDateKey(now) {
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    function triggerCareReminder(dueInputs) {
+      const labels = dueInputs.map(input => input.dataset.reminderText);
+      const spokenMessages = dueInputs.map(input => {
+        if (input.dataset.careKey === 'medicine') {
+          return 'ถึงเวลารับประทานยาแล้ว หากยังไม่ได้รับประทาน ให้แจ้งผู้ปกครองและทำตามแผนที่แพทย์กำหนด';
+        }
+        if (input.dataset.careKey === 'food') {
+          return 'ถึงเวลารับประทานอาหารแล้ว หากยังไม่ได้รับประทาน กรุณาแจ้งผู้ปกครอง';
+        }
+        return `ถึงเวลา${input.dataset.reminderText}แล้ว แต่ยังไม่ได้ทำ กรุณาแจ้งผู้ปกครอง`;
+      });
+      const visibleMessage = labels.length === 1
+        ? `ถึงเวลา${labels[0]}แล้ว แต่รายการนี้ยังไม่ได้ทำ`
+        : `ถึงเวลาแล้ว ยังมีรายการที่ไม่ได้ทำ: ${labels.join(', ')}`;
+
+      if (!modal.classList.contains('open')) openChecklist('prepare');
+      reminderMessage.textContent = visibleMessage;
+      reminderBanner.classList.add('show');
+      playReminderChime();
+      speak(spokenMessages.join(' และ '), .86);
+      showToast('🔔 มีรายการถึงเวลาแต่ยังไม่ได้ทำ');
+      setTimeout(() => reminderBanner.scrollIntoView({ behavior: 'smooth', block: 'center' }), 180);
+    }
+
+    function checkCareReminders() {
+      if (!remindersEnabled) return;
+      const now = new Date();
+      const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      const dateKey = localDateKey(now);
+      const dueInputs = reminderInputs.filter(input => {
+        if (!input.value || input.value !== currentTime) return false;
+        const checkbox = dailyChecklist.find(item => item.dataset.careKey === input.dataset.careKey);
+        if (!checkbox || checkbox.checked) return false;
+        const alertKey = `luna-care-alert:${dateKey}:${input.dataset.careKey}:${input.value}`;
+        try {
+          if (sessionStorage.getItem(alertKey)) return false;
+          sessionStorage.setItem(alertKey, '1');
+        } catch (_) {}
+        return true;
+      });
+      if (dueInputs.length) triggerCareReminder(dueInputs);
     }
 
     function showOnly(view) {
@@ -557,9 +664,32 @@
     goButton.addEventListener('click', goOutside);
     checklist.forEach(item => item.addEventListener('change', updateProgress));
     dailyChecklist.forEach(item => item.addEventListener('change', updateDailyProgress));
+    reminderInputs.forEach(input => input.addEventListener('change', () => {
+      saveReminderTimes();
+      showToast(input.value ? `ตั้งเวลาเตือน ${input.value} น. แล้ว` : 'ลบเวลาเตือนแล้ว');
+    }));
+    enableRemindersButton.addEventListener('click', () => {
+      if (!configuredReminderCount()) {
+        showToast('กรุณาเลือกเวลาอย่างน้อย 1 รายการก่อน');
+        reminderInputs[0].focus();
+        return;
+      }
+      remindersEnabled = true;
+      soundOn = true;
+      soundToggle.setAttribute('aria-pressed', 'true');
+      soundToggle.textContent = '🔊 เปิดเสียง';
+      enableRemindersButton.classList.add('active');
+      enableRemindersButton.setAttribute('aria-pressed', 'true');
+      enableRemindersButton.textContent = '✅ เปิดเสียงเตือนแล้ว';
+      updateReminderState();
+      playReminderChime();
+      speak('เปิดเสียงเตือนตามเวลาแล้ว');
+      checkCareReminders();
+    });
+    dismissReminder.addEventListener('click', () => reminderBanner.classList.remove('show'));
     medicineReminder.addEventListener('click', () => {
-      playMedicineReminder();
-      speak('ถึงเวลากินยาแล้ว กินยาตามเวลาและขนาดที่แพทย์กำหนดนะ', .86);
+      playReminderChime();
+      speak('ถึงเวลารับประทานยาแล้ว หากยังไม่ได้รับประทาน ให้แจ้งผู้ปกครองและทำตามแผนที่แพทย์กำหนด', .86);
       showToast(soundOn ? 'ทดลองเสียงเตือนกินยาแล้ว' : 'กรุณาเปิดเสียงก่อนทดลอง');
     });
     cancelButton.addEventListener('click', () => {
@@ -606,6 +736,7 @@
       document.querySelector('.scene-chip').textContent = '☀️ แดดจัด · UV 8';
       document.querySelectorAll('.energy button').forEach(b => b.classList.remove('selected'));
       document.getElementById('feelMessage').textContent = 'เลือกความรู้สึกเพื่อฝึกสังเกตอาการของตัวเอง';
+      reminderBanner.classList.remove('show');
       showToast('เริ่มสถานการณ์ใหม่แล้ว');
     });
 
@@ -614,6 +745,7 @@
       soundToggle.setAttribute('aria-pressed', String(soundOn));
       soundToggle.textContent = soundOn ? '🔊 เปิดเสียง' : '🔇 ปิดเสียง';
       if (!soundOn && 'speechSynthesis' in window) speechSynthesis.cancel();
+      if (soundOn) checkCareReminders();
     });
 
     document.querySelectorAll('.energy button').forEach(button => button.addEventListener('click', () => {
@@ -634,6 +766,12 @@
         else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
       }
     });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) checkCareReminders();
+    });
+    loadReminderTimes();
+    setInterval(checkCareReminders, 10000);
 
     if (document.modelContext?.registerTool) {
       try {
@@ -657,4 +795,3 @@
   </script>
 </body>
 </html>
-
