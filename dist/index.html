@@ -158,6 +158,15 @@
     .daily-task input[type="checkbox"] { width:21px;height:21px;accent-color:#0d9488;flex:none; }
     .daily-task-icon { font-size:1.25rem;line-height:1; }
     .daily-task strong { font-size:.9rem;line-height:1.35; }
+    .care-info-toggle { flex:none;border:1px solid #8fcddd;border-radius:10px;background:#ecfbff;color:#075985;padding:7px 10px;font-weight:700;font-size:.78rem; }
+    .care-info-toggle[aria-expanded="true"] { background:#075985;color:#fff;border-color:#075985; }
+    .care-detail { width:100%;margin-top:2px;padding:12px 13px;border-radius:12px;background:#f8fdff;border:1px solid #c9e7ef;color:#23475b; }
+    .care-detail[hidden] { display:none; }
+    .care-detail h4 { margin:0 0 7px;color:#073b5c;font-size:.9rem; }
+    .care-detail h4:not(:first-child) { margin-top:13px; }
+    .care-detail ul { margin:0;padding-left:22px; }
+    .care-detail li { margin:4px 0;font-size:.82rem;line-height:1.45; }
+    .care-detail .avoid { color:#9a3412; }
     .reminder-tools { display:flex;align-items:center;gap:7px;margin-left:auto; }
     .reminder-time-label { display:flex!important;align-items:center!important;gap:5px!important;flex:none!important;color:#76500a;font-size:.78rem;font-weight:700;white-space:nowrap; }
     .reminder-time { width:104px;min-height:38px;border:1px solid #dfbd5b;border-radius:10px;background:#fffdf5;color:var(--navy);padding:6px 8px;font-weight:700; }
@@ -259,6 +268,9 @@
       .daily-task input[type="checkbox"] { width:23px;height:23px; }
       .daily-task-icon { font-size:1.1rem; }
       .daily-task strong { font-size:.82rem; }
+      .care-info-toggle { margin-left:30px;min-height:40px; }
+      .care-detail { padding:11px; }
+      .care-detail li { font-size:.8rem; }
       .reminder-tools { width:100%;margin-left:33px;justify-content:flex-start; }
       .reminder-time { min-height:42px; }
       .medicine-alert { min-height:42px; }
@@ -364,16 +376,17 @@
         <section class="daily-care" aria-labelledby="dailyCareTitle">
           <div class="daily-care-head">
             <div><h3 id="dailyCareTitle">การป้องกันการกำเริบของ SLE</h3><p class="daily-care-note">เช็กหัวข้อดูแลประจำวัน ส่วนนี้ไม่กระทบคะแนนเตรียมออกแดด</p></div>
-            <span class="daily-count" id="dailyProgressText">0 / 7</span>
+            <span class="daily-count" id="dailyProgressText">0 / 8</span>
           </div>
           <div class="daily-tasks">
             <div class="daily-task"><label><input class="daily-care-input" data-care-key="medicine" data-reminder-text="รับประทานยา" type="checkbox" /><span class="daily-task-icon">💊</span><strong>1. การรับประทานยาอย่างสม่ำเสมอและถูกต้อง</strong></label><div class="reminder-tools"><label class="reminder-time-label">⏰ เวลา <input class="reminder-time" data-care-key="medicine" data-reminder-text="รับประทานยา" type="time" aria-label="ตั้งเวลาเตือนรับประทานยา" /></label><button class="medicine-alert" id="medicineReminder" type="button">ทดลองเสียง</button></div></div>
             <div class="daily-task"><label><input class="daily-care-input" data-care-key="sun" data-reminder-text="ป้องกันและหลีกเลี่ยงแสงแดด" type="checkbox" /><span class="daily-task-icon">☀️</span><strong>2. การป้องกันและหลีกเลี่ยงแสงแดด / รังสี UV</strong></label></div>
             <div class="daily-task"><label><input class="daily-care-input" data-care-key="symptoms" data-reminder-text="เฝ้าระวังและสังเกตอาการกำเริบ" type="checkbox" /><span class="daily-task-icon">🌡️</span><strong>3. การเฝ้าระวังและการสังเกตอาการกำเริบ</strong></label></div>
-            <div class="daily-task"><label><input class="daily-care-input" data-care-key="food" data-reminder-text="เลือกรับประทานอาหารที่เหมาะสม" type="checkbox" /><span class="daily-task-icon">🥗</span><strong>4. การเลือกรับประทานอาหารที่เหมาะสม</strong></label></div>
-            <div class="daily-task"><label><input class="daily-care-input" data-care-key="exercise" data-reminder-text="ออกกำลังกายและพักผ่อน" type="checkbox" /><span class="daily-task-icon">🏃</span><strong>5. การออกกำลังกายและการพักผ่อน</strong></label></div>
+            <div class="daily-task"><label><input class="daily-care-input" data-care-key="food" data-reminder-text="เลือกรับประทานอาหารที่เหมาะสม" type="checkbox" /><span class="daily-task-icon">🥗</span><strong>4. การเลือกรับประทานอาหารที่เหมาะสม</strong></label><button class="care-info-toggle" type="button" aria-expanded="false" aria-controls="foodAdvice">ดูคำแนะนำ</button><div class="care-detail" id="foodAdvice" hidden><h4>✅ อาหารที่ควรรับประทาน</h4><ul><li>อาหารครบ 5 หมู่ สะอาด และปรุงสุกใหม่</li><li>โปรตีน เช่น ปลา ไข่สุก และเนื้อไก่ไม่ติดหนัง</li><li>ผักและผลไม้ที่ล้างสะอาด</li><li>อาหารที่มีแคลเซียม เช่น นมและโยเกิร์ต</li><li>ข้าวและธัญพืช เพื่อให้พลังงานเพียงพอ</li></ul><h4 class="avoid">⚠️ อาหารที่ควรหลีกเลี่ยง</h4><ul><li>อาหารเค็มจัด เช่น ปลาเค็มและบะหมี่กึ่งสำเร็จรูป</li><li>อาหารไขมันสูง เช่น ของทอดและอาหารฟาสต์ฟู้ด</li><li>อาหารหวานจัด เช่น น้ำอัดลมและขนมหวาน</li><li>อาหารดิบหรือไม่สุก ซึ่งเสี่ยงต่อการติดเชื้อ</li><li>ถั่วงอกอัลฟัลฟาและอาหารเสริมที่กระตุ้นภูมิคุ้มกัน</li></ul></div></div>
+            <div class="daily-task"><label><input class="daily-care-input" data-care-key="exercise" data-reminder-text="ออกกำลังกายอย่างเหมาะสม" type="checkbox" /><span class="daily-task-icon">🏃</span><strong>5. การออกกำลังกาย</strong></label></div>
             <div class="daily-task"><label><input class="daily-care-input" data-care-key="mood" data-reminder-text="จัดการอารมณ์และความเครียด" type="checkbox" /><span class="daily-task-icon">💛</span><strong>6. การจัดการอารมณ์และความเครียด</strong></label></div>
             <div class="daily-task"><label><input class="daily-care-input" data-care-key="appointment" data-reminder-text="ตรวจสอบวันมาตรวจตามนัด" type="checkbox" /><span class="daily-task-icon">📅</span><strong>7. การมาตรวจตามนัด</strong></label></div>
+            <div class="daily-task"><label><input class="daily-care-input" data-care-key="sleep" data-reminder-text="นอนหลับพักผ่อนให้เพียงพอ" type="checkbox" /><span class="daily-task-icon">😴</span><strong>8. การนอนหลับพักผ่อน</strong></label><button class="care-info-toggle" type="button" aria-expanded="false" aria-controls="restAdvice">ดูคำแนะนำ</button><div class="care-detail" id="restAdvice" hidden><h4>😴 คำแนะนำการนอนหลับพักผ่อน</h4><ul><li>ควรนอนหลับพักผ่อน 7–8 ชั่วโมงต่อวัน</li><li>เข้านอนและตื่นนอนให้เป็นเวลา</li><li>หลีกเลี่ยงการนอนดึกและกิจกรรมหนัก</li><li>พักผ่อนระหว่างวันเมื่อมีอาการอ่อนเพลีย</li></ul></div></div>
           </div>
           <div class="daily-progress" aria-hidden="true"><span id="dailyProgressBar"></span></div>
           <div class="reminder-setup"><button class="enable-reminders" id="enableReminders" type="button" aria-pressed="false">🔔 เปิดเสียงเตือนและตรวจรายการ</button><p id="reminderState">ตั้งเวลาได้เฉพาะตอนกินยา ส่วนข้อที่ยังไม่ติ๊กจะเตือนเมื่อเปิดรายการ</p></div>
@@ -532,10 +545,10 @@
     function announceUncheckedCare() {
       const uncheckedItems = dailyChecklist.filter(item => !item.checked);
       if (!uncheckedItems.length) {
-        reminderMessage.textContent = 'ทำรายการดูแลประจำวันครบทั้ง 7 ข้อแล้ว';
+        reminderMessage.textContent = 'ทำรายการดูแลประจำวันครบทั้ง 8 ข้อแล้ว';
         reminderBanner.classList.add('show');
         speak('ทำรายการดูแลประจำวันครบแล้ว เก่งมาก');
-        showToast('ทำรายการครบทั้ง 7 ข้อแล้ว ✓');
+        showToast('ทำรายการครบทั้ง 8 ข้อแล้ว ✓');
         return;
       }
       const labels = uncheckedItems.map(item => item.dataset.reminderText);
@@ -693,6 +706,13 @@
     reminderInputs.forEach(input => input.addEventListener('change', () => {
       saveReminderTimes();
       showToast(input.value ? `ตั้งเวลาเตือน ${input.value} น. แล้ว` : 'ลบเวลาเตือนแล้ว');
+    }));
+    document.querySelectorAll('.care-info-toggle').forEach(button => button.addEventListener('click', () => {
+      const detail = document.getElementById(button.getAttribute('aria-controls'));
+      const willOpen = button.getAttribute('aria-expanded') !== 'true';
+      button.setAttribute('aria-expanded', String(willOpen));
+      button.textContent = willOpen ? 'ซ่อนคำแนะนำ' : 'ดูคำแนะนำ';
+      detail.hidden = !willOpen;
     }));
     enableRemindersButton.addEventListener('click', () => {
       remindersEnabled = true;
